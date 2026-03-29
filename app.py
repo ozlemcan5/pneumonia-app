@@ -32,6 +32,25 @@ if not os.path.exists(MODEL_PATH):
 
 print("Model yükleniyor...")
 
+from tensorflow.keras.layers import Dense, InputLayer
+
+# Keras 3 ile kaydedilen modellerdeki bilinmeyen parametreleri temizleyen sınıflar
+class FixedDense(Dense):
+    def __init__(self, **kwargs):
+        kwargs.pop('quantization_config', None)
+        super().__init__(**kwargs)
+
+class FixedInputLayer(InputLayer):
+    def __init__(self, **kwargs):
+        kwargs.pop('batch_shape', None)
+        kwargs.pop('optional', None)
+        super().__init__(**kwargs)
+
+# Keras'ın bu hatalı sınıflar yerine bizim "temizlenmiş" sınıflarımızı kullanmasını sağlıyoruz
+tf.keras.utils.get_custom_objects()['Dense'] = FixedDense
+tf.keras.utils.get_custom_objects()['InputLayer'] = FixedInputLayer
+
+print("Model yükleniyor...")
 model = tf.keras.models.load_model(MODEL_PATH, compile=False)
 
 
