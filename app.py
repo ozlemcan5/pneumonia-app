@@ -9,6 +9,7 @@ import numpy as np
 import pickle
 from sklearn.metrics import roc_curve, auc
 import gdown
+import gc 
 
 # Klasör Ayarları
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -50,21 +51,30 @@ for layer in target_layers:
     layer.from_config = classmethod(fixed_from_config)
 
 # Model Yükleme
-model = None 
+model = None
 
-print("Model yükleme denemesi başlatıldı...")
-try:
-    # Önce en modern yöntemi dene
-    model = tf.keras.models.load_model(MODEL_PATH, compile=False)
-    print("Model başarıyla yüklendi!")
-except Exception as e:
-    print(f"Standart yükleme başarısız: {e}")
+def load_model_ultra_light():
+    global model
     try:
-        # Eğer başarısız olursa, 'safe_mode' kapatarak zorla
-        model = tf.keras.models.load_model(MODEL_PATH, compile=False, safe_mode=False)
-        print("Model güvenli mod kapatılarak yüklendi!")
-    except Exception as e2:
-        print(f"Zorlayarak yükleme de başarısız: {e2}")
+        print("Model yükleniyor (Hafif mod)...")
+        # Bellekte yer açmak için Keras'ın bazı özelliklerini kapatıyoruz
+        tf.keras.backend.clear_session()
+        
+        # Modeli safe_mode=False ile en temel haliyle yüklüyoruz
+        model = tf.keras.models.load_model(
+            MODEL_PATH, 
+            compile=False, 
+            safe_mode=False
+        )
+        print("Model başarıyla yüklendi!")
+    except Exception as e:
+        print(f"Hata: {e}")
+        # Eğer hala hata veriyorsa, RAM yetmiyor olabilir
+        model = None
+    finally:
+        gc.collect() # Gereksiz verileri RAM'den temizle
+
+load_model_ultra_light()
 
 # Metrics yükleme
 try:
