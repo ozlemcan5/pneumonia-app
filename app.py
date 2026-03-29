@@ -1,135 +1,68 @@
 import os
 import matplotlib
-matplotlib.use('Agg') # Sunucu için şart
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
-from flask import Flask, render_template, request, url_for
+from flask import Flask, render_template, request
 import tensorflow as tf
 from PIL import Image
 import numpy as np
 import pickle
-from sklearn.metrics import roc_curve, auc
 import gdown
-import gc 
-
-# Klasör Ayarları
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-UPLOAD_FOLDER = os.path.join(BASE_DIR, "static", "uploads")
-GRAPH_FOLDER = os.path.join(BASE_DIR, "static", "graphs")
-
-for folder in [UPLOAD_FOLDER, GRAPH_FOLDER]:
-    os.makedirs(folder, exist_ok=True)
 
 app = Flask(__name__)
-app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
-app.config['GRAPH_FOLDER'] = GRAPH_FOLDER
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+app.config['UPLOAD_FOLDER'] = os.path.join(BASE_DIR, "static", "uploads")
+app.config['GRAPH_FOLDER'] = os.path.join(BASE_DIR, "static", "graphs")
 
-# Model İndirme
+for folder in [app.config['UPLOAD_FOLDER'], app.config['GRAPH_FOLDER']]:
+    os.makedirs(folder, exist_ok=True)
+
 MODEL_PATH = "pneumonia_model.keras"
 FILE_ID = "11Bt0nfupPs4T6G4xxMoW6mD0eqg-bBgK"
 
 if not os.path.exists(MODEL_PATH):
-    print("Model indiriliyor...")
     url = f"https://drive.google.com/uc?id={FILE_ID}"
     gdown.download(url, MODEL_PATH, quiet=False)
 
-# --- KERAS 3 -> 2 UYUMLULUK YAMASI (GELİŞTİRİLMİŞ) ---
-def fixed_from_config(cls, config):
-    # Bilinmeyen tüm Keras 3 parametrelerini temizle
-    bad_keys = ['batch_shape', 'optional', 'quantization_config', 'registered_name', 'trainable', 'dtype']
-    for key in bad_keys:
-        config.pop(key, None)
-    return cls(**config)
-
-# Standart tüm katmanları yamala
-target_layers = [
-    tf.keras.layers.InputLayer, tf.keras.layers.Dense, 
-    tf.keras.layers.Conv2D, tf.keras.layers.MaxPooling2D, 
-    tf.keras.layers.Flatten, tf.keras.layers.Dropout
-]
-
-for layer in target_layers:
-    layer.from_config = classmethod(fixed_from_config)
-
-# Model Yükleme
 model = None
 
-def load_model_ultra_light():
-    global model
-    try:
-        print("Model yükleniyor (Hafif mod)...")
-        # Bellekte yer açmak için Keras'ın bazı özelliklerini kapatıyoruz
-        tf.keras.backend.clear_session()
-        
-        # Modeli safe_mode=False ile en temel haliyle yüklüyoruz
-        model = tf.keras.models.load_model(
-            MODEL_PATH, 
-            compile=False, 
-            safe_mode=False
-        )
-        print("Model başarıyla yüklendi!")
-    except Exception as e:
-        print(f"Hata: {e}")
-        # Eğer hala hata veriyorsa, RAM yetmiyor olabilir
-        model = None
-    finally:
-        gc.collect() # Gereksiz verileri RAM'den temizle
-
-load_model_ultra_light()
-
-# Metrics yükleme
+# MODEL YÜKLEME - EN SADE HALİ
+print("Model yükleniyor...")
 try:
-    with open("metrics.pkl", "rb") as f:
-        metrics = pickle.load(f)
-except:
-    metrics = {"auc": 0.95} # Hata payı için varsayılan
-
-def prepare(img):
-    img = img.resize((150,150))
-    img = np.array(img)/255.0
-    img = np.expand_dims(img, axis=0)
-    return img
+    # Keras 3 dosyasını doğrudan, hiçbir yama olmadan yüklemeyi dene
+    model = tf.keras.models.load_model(MODEL_PATH, compile=False)
+    print("Model başarıyla yüklendi!")
+except Exception as e:
+    print(f"Yükleme hatası: {e}")
 
 @app.route("/")
 def home():
     return render_template("index.html")
 
-@app.route("/about")
-def about():
-    return render_template("about.html")
-
 @app.route("/predict", methods=["POST"])
 def predict():
-    global model 
+    global model
     if model is None:
-        return "Model dosyası bozuk veya yüklenemedi. Lütfen Render loglarını kontrol edin.", 500
-
+        return "Model yüklenemedi. Lütfen sistem yöneticisine danışın.", 500
+    
     file = request.files["file"]
     path = os.path.join(app.config['UPLOAD_FOLDER'], file.filename)
     file.save(path)
-
-    img = Image.open(path).convert("RGB")
-    img_prepared = prepare(img)
     
-    # Tahmin
-    preds = model.predict(img_prepared)
-    pred_prob = float(preds[0][0])
-    result = "PNEUMONIA" if pred_prob > 0.5 else "NORMAL"
-
-    # ROC Çizimi
+    img = Image.open(path).convert("RGB").resize((150, 150))
+    img_array = np.array(img) / 255.0
+    img_array = np.expand_dims(img_array, axis=0)
+    
+    preds = model.predict(img_array)
+    result = "PNEUMONIA" if preds[0][0] > 0.5 else "NORMAL"
+    
+    # Boş bir grafik oluştur (hata vermemesi için)
     plt.figure()
-    plt.plot([0,1], [0,1], linestyle='--')
-    plt.title(f"Tahmin Sonucu: {result}")
-    
-    live_roc_path = os.path.join(app.config['GRAPH_FOLDER'], "live_roc.png")
-    plt.savefig(live_roc_path)
+    plt.title(f"Sonuç: {result}")
+    plt.savefig(os.path.join(app.config['GRAPH_FOLDER'], "live_roc.png"))
     plt.close()
-
-    return render_template("result.html",
-                           result=result,
-                           metrics=metrics,
-                           roc=metrics.get("auc", 0),
-                           image=file.filename,
-                           live_roc="live_roc.png")
+    
+    return render_template("result.html", result=result, image=file.filename, live_roc="live_roc.png")
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
