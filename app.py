@@ -32,19 +32,18 @@ if not os.path.exists(MODEL_PATH):
 
 print("Model yükleniyor...")
 
-# Tüm yama sınıflarını silin, sadece bunu ekleyin:
-import tensorflow as tf
-
-# Keras'ın model yüklerken bilmediği parametreleri görmezden gelmesini sağlar
-tf.keras.utils.get_custom_objects().clear() 
-
-print("Model yükleniyor...")
-# Modeli 'safe mode' gibi yüklemek için bu parametreleri kullanın
-model = tf.keras.models.load_model(
-    MODEL_PATH, 
-    compile=False,
-    safe_mode=False # Bu parametre Keras 3/2 uyuşmazlığını esnetir
-)
+try:
+    # safe_mode=False: Keras'ın bilmediği parametreleri (batch_shape vb.) görmezden gelmesini sağlar
+    model = tf.keras.models.load_model(
+        MODEL_PATH, 
+        compile=False, 
+        safe_mode=False 
+    )
+    print("Model başarıyla yüklendi!")
+except Exception as e:
+    print(f"Hata oluştu, alternatif yükleme deneniyor: {e}")
+    # Eğer safe_mode yemezse standart yükleme:
+    model = tf.keras.models.load_model(MODEL_PATH, compile=False)
 
 
 metrics = pickle.load(open("metrics.pkl", "rb"))
@@ -108,5 +107,7 @@ def predict():
 
 
 if __name__ == "__main__":
+    # Render'ın atadığı portu yakalamak zorunludur
     val_port = int(os.environ.get("PORT", 5000))
+    print(f"Uygulama {val_port} portunda başlatılıyor...")
     app.run(host="0.0.0.0", port=val_port, debug=False)
