@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sonuç </title>
+
+    <style>
+        body { margin:0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color:#f0f2f5; color:#333; }
+        header { background-color: #2a9d8f; color:white; padding:15px 30px; display:flex; justify-content: space-between; align-items:center; }
+        header h1 { margin:0; font-size:1.5rem; }
+        nav { background-color:#2a9d8f; color:white; display:flex; justify-content:space-between; padding:15px 30px; align-items:center; box-shadow:0 4px 6px rgba(0,0,0,0.1); }
+        nav a { color:white; margin-left:20px; text-decoration:none; font-weight:500; }
+        nav a:hover { text-decoration:underline; }
+        main { max-width:800px; margin:40px auto; background:white; padding:20px; border-radius:12px; box-shadow:0 8px 16px rgba(0,0,0,0.1); text-align:center; }
+        img { margin:15px 0; border-radius:10px; }
+        ul { list-style:none; padding:0; text-align:left; display:inline-block; margin-top:20px; }
+        li { margin-bottom:10px; font-size:1rem; }
+        h2, h3 { color:#2a9d8f; margin-top:20px; }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1 class="logo">Pneumonia(Zatürre) Tespit Sistemi</h1>
+    <nav>
+        <a href="/">Ana Sayfa</a>
+        <a href="/about">Proje Hakkında</a>
+    </nav>
+</header>
+
+<main>
+    <h2>Sonuç: {{ result }}</h2>
+
+    <h3>Yüklenen Görüntü:</h3>
+    <img src="{{ url_for('static', filename='uploads/' + image) }}" width="300">
+
+    <h3>Model Metrikleri:</h3>
+    <ul>
+        <li><strong>Accuracy:</strong> {{ metrics.accuracy }}</li>
+        <li><strong>Recall: </strong>  {{ metrics.recall }}</li>
+        <li><strong>F1 Score: </strong>{{ metrics.f1 }}</li>
+        <li><strong>MAE: </strong>     {{ metrics.mae }}</li>
+        <li><strong>Cohen Kappa:</strong> {{ metrics.kappa }}</li>
+        <li><strong>ROC AUC:</strong>  {{ roc }}</li>
+    </ul>
+
+    <h3>Grafikler:</h3>
+    <img src="{{ url_for('static', filename='graphs/accuracy.png') }}" width="400">
+    <img src="{{ url_for('static', filename='graphs/loss.png') }}" width="400">
+    <img src="{{ url_for('static', filename='graphs/cm.png') }}" width="400">
+    <img src="{{ url_for('static', filename='graphs/roc.png') }}" width="400">
+    <img src="{{ url_for('static', filename='graphs/' + live_roc) }}" width="400">
+
+</main>
+
+</body>
+</html>

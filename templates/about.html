@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Proje Hakkında </title>
+
+    <style>
+        body { margin:0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color:#f0f2f5; color:#333; }
+        header { background-color: #2a9d8f; color:white; padding:15px 30px; display:flex; justify-content: space-between; align-items:center; }
+        header h1 { margin:0; font-size:1.5rem; }
+        nav a { color:white; margin-left:20px; text-decoration:none; font-weight:500; }
+        nav a:hover { text-decoration:underline; }
+        nav { background-color:#2a9d8f; color:white; display:flex; justify-content:space-between; padding:15px 30px; align-items:center; box-shadow:0 4px 6px rgba(0,0,0,0.1); }
+        nav .logo { font-size:1.5rem; font-weight:bold;}
+        nav ul {  list-style:none;  display:flex; gap:20px;}
+        nav ul li { cursor:pointer; font-weight:500; transition:0.3s; }
+        nav ul li:hover { text-decoration: underline; }
+        main { max-width:1000px; margin:40px auto; background:white; padding:30px; border-radius:10px; box-shadow:0 6px 12px rgba(0,0,0,0.1); line-height:1.7; }
+        a { color:#e70606; }
+        .container { max-width:600px; margin:50px auto; padding:20px; background-color:white; border-radius:10px; box-shadow:0 6px 12px rgba(0,0,0,0.1); text-align:center; }
+        h2, h3 { color:#2a9d8f; margin-top:20px; }
+        p { margin-bottom:15px; font-size:1rem; }
+        ul, ol { margin-left:20px; margin-bottom:20px; }
+        li { margin-bottom:8px; font-size:1rem; }
+        code { background:#f4f4f4; padding:2px 4px; border-radius:4px; font-size:0.95rem; }
+    </style>
+</head>
+
+<body>
+<header>
+    <h1 class="logo">Pneumonia(Zatürre) Tespit Sistemi</h1>
+    <nav>
+        <a href="/">Ana Sayfa</a>
+        <a href="/about">Proje Hakkında</a>
+    </nav>
+</header>
+
+<main>
+
+    <h2>Proje Hakkında</h2>
+    <p>Bu proje göğüs röntgeni (chest X-ray) görüntülerini analiz ederek bir kişinin pneumonia (zatürre) olup olmadığını tahmin etmeyi amaçlayan bir yapay zeka uygulamasıdır. Pneumonia, erken teşhis edilmediğinde ciddi sağlık sorunlarına yol açabilen bir akciğer enfeksiyonudur. Bu hastalığın teşhisi uzman doktorlar tarafından röntgen görüntülerinin manuel olarak incelenmesi ile yapılmaktadır. Ancak bu süreç zaman alıcıdır ve uzmanlık gerektirir.
+        Özellikle hasta sayısının fazla olduğu durumlarda hızlı ve doğru teşhis koymak zorlaşmaktadır. Bu nedenle, otomatik ve güvenilir bir karar destek sistemine ihtiyaç duyulmaktadır.</p>
+         
+    <h3>Projenin Amacı ve Hedefleri</h3>
+
+    <ul>
+        <li>Bu proje, derin öğrenme teknikleri kullanarak röntgen görüntülerini analiz eden ve pneumonia varlığını tespit edebilen bir sistem geliştirerek bu probleme çözüm sunmayı amaçlamaktadır.</li>
+        <li>Hedefler ise röntgen görüntülerini analiz ederek pneumonia olup olmadığını yüksek doğrulukla tahmin etmek, röntgen görüntülerini manuel incelemeye bağımlılığı azaltmak ve hastaların ve sağlık profesyonellerinin zamanını ve maliyetini optimize etmektir.</li>
+     </ul>
+
+    <h3>Projenin Önemi ve Kullanım Alanı</h3>
+
+    <p>Pneumonia(zatürre), özellikle çocuklar, yaşlılar ve bağışıklık sistemi zayıf bireyler için ciddi sonuçları olabilen bir hastalıktır. Erken teşhis, hastalığın ilerlemesini önlemek ve tedavi sürecini hızlandırmak açısından kritik öneme sahiptir.</p>
+    
+    <p>Kullanım alanları:</p>
+
+    <ul>
+        <li>Hastanelerde karar destek sistemi</li>
+        <li>Radyoloji birimlerinde ön analiz aracı</li>
+        <li>Sağlık teknolojileri ve mobil sağlık uygulamaları</li>
+        <li>Akademik araştırmalar ve eğitim</li>
+    </ul>
+
+    <h3>Veri Seti</h3>
+
+    <p>Kullanılan veri seti: <a href="https://www.kaggle.com/datasets/paultimothymooney/chest-xray-pneumonia" target="_blank">Chest X-Ray Pneumonia</a></p>
+    <p>Bu veri seti, gerçek hastalardan elde edilmiş göğüs röntgeni görüntülerini içermektedir.Veri setinde 2 sınıf vardır ve 3 gruba ayrılmıştır. Veri setinde şunlar yer alır:</p>
+    
+    <ul>
+        <li><strong>Train:</strong> Modelin eğitilmesi için kullanılan görüntüler.</li>
+        <li><strong>Validation (val):</strong> Modelin eğitim sırasında doğrulamasını yapmak için kullanılan görüntüler.</li>
+        <li><strong>Test:</strong> Modelin performansını bağımsız olarak değerlendirmek için kullanılan görüntüler.</li>
+        <li>Veriler, Normal ve Pneumonia (bakteriyel/viral) olarak ayrılmıştır.</li>
+        <li>Veri setinde 17.000 görüntü bulunmaktadır.</li>
+    </ul>
+
+    <h3>Veri Ön İşleme Süreci</h3>
+
+    <p>Yeniden Boyutlandırma</p>
+
+    <ul>
+        <li>Tüm görüntüler modelin kabul ettiği boyuta (150x150) getirilmiştir.</li>
+    </ul>   
+
+    <p>Normalizasyon</p>
+
+    <ul>
+        <li>Piksel değerleri 0-255 aralığından 0-1 aralığına çekilmiştir. Bu, modelin daha hızlı ve dengeli öğrenmesini sağlamaktadır.</li>
+    </ul>
+
+    <p>Veri Temizleme</p>
+
+    <ul>
+        <li>Eksik, bozuk veya hatalı görüntüler veri setinden çıkarılmıştır.</li>
+    </ul>
+
+    <h3>Model Seçiminin Gerekçesi</h3>
+
+    <p>Convolutional Neural Network (CNN) kullanılmıştır. Bunun nedenleri:</p>
+
+    <ul>
+        <li>Otomatik özellik çıkarımı yapabilmesi.</li>
+        <li>Tıbbi görüntü analizinde yaygın olarak kullanılmasıdır.</li>
+        <li>Ayrıca CNN modeli fazla veriyle daha iyi öğrenir.Elimizde fazla veri olduğu için bu projede CNN kullanılması daha uygundur.</li>
+    </ul>  
+
+    <p>CNN, klasik makine öğrenmesi yöntemlerine göre görüntü işleme problemlerinde çok daha etkilidir.</p>
+
+    <p>Kullanılan CNN modeli şu temel bileşenlerden oluşur:</p>
+
+    <ul> 
+        <li><strong>Convolutional Layer:</strong> Görüntüden kenar, doku gibi özellikleri çıkarır.</li>
+        <li><strong>Pooling Layer (MaxPooling):</strong> Boyutu küçültür ve önemli bilgiyi korur.</li>
+        <li><strong>Flatten Layer:</strong> Veriyi düzleştirir.</li>
+        <li><strong>Dense (Fully Connected) Layer:</strong> Sınıflandırma yapar.</li>
+        <li><strong>Output Layer:</strong> Sonuç üretir. (0 = Normal, 1 = Pneumonia)</li>
+    </ul>
+
+    <h3>Hiperparametreler</h3>
+
+    <ul>
+        <li><strong>Epoch:</strong>Modelin tüm veri seti üzerinden kaç kez geçtiğini belirtir.</li>
+    </ul>
+
+        <p><strong>Epoch:</strong> 5</p>
+
+    <ul>
+        <li><strong>Batch Size:</strong>Modelin her adımda kaç örnekle güncellendiğini belirler.</li>
+    </ul>    
+
+        <p><strong>Batch Size:</strong> 32</p>
+
+    <ul>
+        <li><strong>Optimizer:</strong>Ağırlıkları güncelleyen algoritmadır.</li>
+    </ul>
+
+        <p><strong>Optimizer:</strong> Adam(0.001)</p>
+
+    <ul>
+        <li><strong>Learning Rate:</strong>Modelin öğrenme hızını belirler.</li>
+    </ul>
+
+        <p><strong>Learning Rate:</strong> 0.001</p>
+
+    <ul>
+        <li><strong>Loss Function:</strong>Modelin hatasını ölçer.</li>
+    </ul>
+
+        <p><strong>Loss Function:</strong> binary_crossentropy</p>
+    
+
+    <h3>Eğitim Süreci</h3>
+
+    <p>Bu projede model, göğüs röntgeni görüntülerinden pneumonia tespiti yapabilmek için eğitilmiştir. Eğitim süreci şu adımlardan oluşmaktadır:</p>
+ 
+    <ul>
+        <li>Veri seti, eğitim (train), doğrulama (validation) ve test olarak üçe ayrıldı.</li>
+        <li>Eğitim verileri modelin öğrenmesi için kullanıldı.</li>
+        <li>Görüntüler modele verilmeden önce yeniden boyutlandırıldı ve normalize edildi.</li>
+        <li>Görüntüler belirli batch’ler halinde modele verildi.</li>
+        <li>Her batch sonrası modelin ağırlıkları optimizer (Adam) ile güncellendi.</li>
+        <li>Hata değeri (loss), Binary Crossentropy fonksiyonu ile hesaplandı.</li>
+        <li>Model, belirlenen epoch sayısı boyunca veri seti üzerinde tekrar tekrar çalıştırıldı.</li>   
+        <li>Her epoch sonunda model, doğrulama verisi üzerinde test edilerek performansı ölçüldü.</li>
+    </ul>
+
+    <p>Bu süreç sayesinde model, eğitim verisindeki örüntüleri öğrenmiş ve doğrulama verisi ile genelleme yeteneği kontrol edilmiştir.</p>
+
+    <h3>Performans Metriklerinin Seçimi </h3>
+
+    <p>Model performansını doğru değerlendirebilmek için birden fazla metrik kullanılmıştır:</p>
+
+    <ul>
+        <li>Accuracy (Doğruluk): Modelin doğru tahminlerinin toplam tahminlere oranıdır. Örneğin 100 görüntü var, model 90’ını doğru tahmin etti → Accuracy = %90'dır.</li>
+        <li>Recall (Duyarlılık): Gerçek pozitiflerin(true positive) ne kadarını doğru tahmin ettiğimizi gösterir. Örneğin 10 pneumonia görüntüsü var, model 8’ini doğru tahmin etti → Recall = 0.8'dir. (%80).</li>
+        <li>F1 Score: Recall ve Precision’ı dengeler, tek bir sayı olarak modelin performansını özetler. Model yüksek recall ama düşük precision ise F1 düşer.</li>
+        <li>Precision: Pozitif dediği tahminlerin ne kadarının gerçekten pozitif olduğudur.</li>
+        <li>MAE (Mean Absolute Error): Tahmin edilen değer ile gerçek değer arasındaki ortalama mutlak farktır. Örneğin tahminimiz 0.8, gerçek ise 1 olursa MAE = 0.2 olur.</li>
+        <li>Cohen Kappa: Modelin başarı oranının şansa göre ne kadar iyi olduğunu gösterir. Örneğin veri setinde daha fazla “Normal” ve daha az “Pneumonia” varsa ve model hep “Normal” derse Accuracy yüksek çıkar ama Cohen Kappa düşük olur çünkü rastgele tahmin etkisini düzenler ve gerçek başarıyı ölçer.</li>
+        <li>ROC AUC: Modelin pozitiflerini(hasta) negatiflerden(sağlıklı) ayırma yeteneğini ölçer. ROC eğrisinde yatay eksen false positive(sağlıklıları hasta olarak görür), dikey eksen true positive(hastaları hasta olarak görür.) değerlerini gösterir. Eğri ne kadar yukarıda ve sola yakınsa model o kadar iyidir.</li>
+    </ul>
+
+    <p>Bu metriklerin birlikte kullanılması, modelin performansını tek bir açıdan değil, çok yönlü olarak değerlendirmeyi amaçlamaktadır.</p>
+    
+    <h3>Sonuçların Gösterilmesi ve Yorumlanması</h3>
+
+    <p>Kullanıcı web arayüzünden bir görüntü yüklediğinde:</p>
+
+    <ul>
+        <li>Görüntü model için hazırlanır (150x150 boyutuna yeniden boyutlandırılır ve normalize edilir).</li>
+        <li>Model tahmin yapar ve sonucu ekranda gösterir.</li>
+        <li>Tahmin edilen örnek için ROC eğrisi çizilir ve kullanıcıya görselleştirilir.</li>
+        <li>Bu sayede kullanıcı, modelin tahminini grafiksel olarak görebilir.</li>
+    
+        <li>Yüksek accuracy, modelin genel olarak doğru tahmin yaptığını gösterir.</li>
+        <li>Yüksek recall, modelin pnömoni vakalarını kaçırmadığını gösterir.</li>
+        <li>Eğer precision düşükse, model bazı sağlıklı bireyleri hasta olarak sınıflandırıyor olabilir.</li>
+        <li>F1 score, bu iki metriğin dengede olup olmadığını gösterir.</li>
+        <li>ROC AUC değerinin 1’e yakın olması, modelin sınıfları iyi ayırt ettiğini gösterir.</li>
+        <li>Eğitim ve doğrulama sonuçları arasında büyük fark varsa overfitting vardır.</li>
+        <li>Loss değeri düşükse model daha doğru öğrenmiştir.</li>
+    </ul>
+
+    <h3>Genel Özet</h3>
+    <p>Bu projede, göğüs röntgeni görüntülerinden pneumonia tespiti yapabilen CNN tabanlı bir model geliştirilmiştir.
+        Elde edilen sonuçlar, modelin pneumonia tespitinde yüksek doğruluk ve başarılı performans gösterdiğini ortaya koymaktadır. 
+        Kullanılan performans metrikleri sayesinde modelin hem genel doğruluğu hem de sınıflar arası ayırt etme yeteneği değerlendirilmiştir.
+        Geliştirilen sistem, sağlık alanında karar destek aracı olarak kullanılabilir. Özellikle erken teşhis süreçlerinde doktorlara yardımcı olabilir ve teşhis süresini kısaltabilir.</p>
+    
+
+    <h3>Kaynakça</h3>
+    <p><a href="https://www.kaggle.com/datasets/paultimothymooney/chest-xray-pneumonia" target="_blank">Chest X-Ray Pneumonia</a></p>
+    <p><a href="https://www.aidoc.com/learn/blog/deep-learning-in-healthcare/#deep-learning-applications-in-healthcare%C2%A0" target="_blank">Deep Learning in Healthcare</a></p>
+    <p><a href="https://www.tensorflow.org/" target="_blank">Tensorflow.org</a></p>
+    <p><a href="https://scikit-learn.org/" target="_blank">Scikit_Learn.org</a></p>
+</main>
+
+</body>
+</html>
