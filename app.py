@@ -32,18 +32,32 @@ if not os.path.exists(MODEL_PATH):
 
 print("Model yükleniyor...")
 
+from tensorflow.keras.layers import Layer
+
+# KERAS 3 -> 2 UYUMLULUK FİLTRESİ
+def fixed_from_config(cls, config):
+    # Keras 2'nin tanımadığı tüm Keras 3 parametrelerini sözlükten siliyoruz
+    config.pop('batch_shape', None)
+    config.pop('optional', None)
+    config.pop('quantization_config', None)
+    config.pop('registered_name', None)
+    # Temizlenmiş config ile orijinal yüklemeyi çağırıyoruz
+    return cls(**config)
+
+# Hata veren tüm katman tiplerine bu filtreyi uyguluyoruz
+target_layers = [tf.keras.layers.InputLayer, tf.keras.layers.Dense, 
+                 tf.keras.layers.Conv2D, tf.keras.layers.MaxPooling2D, 
+                 tf.keras.layers.Flatten]
+
+for layer in target_layers:
+    layer.from_config = classmethod(fixed_from_config)
+
+print("Model yükleniyor...")
 try:
-    # safe_mode=False: Keras'ın bilmediği parametreleri (batch_shape vb.) görmezden gelmesini sağlar
-    model = tf.keras.models.load_model(
-        MODEL_PATH, 
-        compile=False, 
-        safe_mode=False 
-    )
+    model = tf.keras.models.load_model(MODEL_PATH, compile=False)
     print("Model başarıyla yüklendi!")
 except Exception as e:
-    print(f"Hata oluştu, alternatif yükleme deneniyor: {e}")
-    # Eğer safe_mode yemezse standart yükleme:
-    model = tf.keras.models.load_model(MODEL_PATH, compile=False)
+    print(f"Yükleme hatası: {e}")
 
 
 metrics = pickle.load(open("metrics.pkl", "rb"))
@@ -107,7 +121,7 @@ def predict():
 
 
 if __name__ == "__main__":
-    # Render'ın atadığı portu yakalamak zorunludur
-    val_port = int(os.environ.get("PORT", 5000))
-    print(f"Uygulama {val_port} portunda başlatılıyor...")
-    app.run(host="0.0.0.0", port=val_port, debug=False)
+    # Render'ın dinamik portunu alıyoruz
+    port = int(os.environ.get("PORT", 5000))
+    # host="0.0.0.0" Render için kritiktir!
+    app.run(host="0.0.0.0", port=port)
