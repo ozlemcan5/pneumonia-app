@@ -32,27 +32,34 @@ if not os.path.exists(MODEL_PATH):
 
 print("Model yükleniyor...")
 
-from tensorflow.keras.layers import Dense, InputLayer
+from tensorflow.keras import layers
 
-# Keras 3 ile kaydedilen modellerdeki bilinmeyen parametreleri temizleyen sınıflar
-class FixedDense(Dense):
-    def __init__(self, **kwargs):
-        kwargs.pop('quantization_config', None)
-        super().__init__(**kwargs)
+# --- TÜM KATMANLAR İÇİN OTOMATİK TEMİZLEYİCİ (JOKER YAMA) ---
+def fix_all_layers():
+    # Hata verebilecek tüm temel katman tiplerini listeliyoruz
+    target_layers = ['InputLayer', 'Dense', 'Conv2D', 'MaxPooling2D', 'Flatten']
+    
+    for layer_name in target_layers:
+        if hasattr(layers, layer_name):
+            layer_class = getattr(layers, layer_name)
+            original_init = layer_class.__init__
+            
+            def new_init(self, *args, **kwargs):
+                # Keras 2'nin tanımadığı tüm Keras 3 etiketlerini temizle
+                kwargs.pop('batch_shape', None)
+                kwargs.pop('optional', None)
+                kwargs.pop('quantization_config', None)
+                kwargs.pop('registered_name', None)
+                return original_init(self, *args, **kwargs)
+            
+            layer_class.__init__ = new_init
 
-class FixedInputLayer(InputLayer):
-    def __init__(self, **kwargs):
-        kwargs.pop('batch_shape', None)
-        kwargs.pop('optional', None)
-        super().__init__(**kwargs)
-
-# Keras'ın bu hatalı sınıflar yerine bizim "temizlenmiş" sınıflarımızı kullanmasını sağlıyoruz
-tf.keras.utils.get_custom_objects()['Dense'] = FixedDense
-tf.keras.utils.get_custom_objects()['InputLayer'] = FixedInputLayer
+# Yamayı çalıştır
+fix_all_layers()
 
 print("Model yükleniyor...")
+# Artık tüm katmanlar 'temizlendiği' için güvenle yüklenecektir
 model = tf.keras.models.load_model(MODEL_PATH, compile=False)
-
 
 
 metrics = pickle.load(open("metrics.pkl", "rb"))
