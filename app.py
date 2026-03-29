@@ -32,34 +32,19 @@ if not os.path.exists(MODEL_PATH):
 
 print("Model yükleniyor...")
 
-from tensorflow.keras import layers
+# Tüm yama sınıflarını silin, sadece bunu ekleyin:
+import tensorflow as tf
 
-# --- TÜM KATMANLAR İÇİN OTOMATİK TEMİZLEYİCİ (JOKER YAMA) ---
-def fix_all_layers():
-    # Hata verebilecek tüm temel katman tiplerini listeliyoruz
-    target_layers = ['InputLayer', 'Dense', 'Conv2D', 'MaxPooling2D', 'Flatten']
-    
-    for layer_name in target_layers:
-        if hasattr(layers, layer_name):
-            layer_class = getattr(layers, layer_name)
-            original_init = layer_class.__init__
-            
-            def new_init(self, *args, **kwargs):
-                # Keras 2'nin tanımadığı tüm Keras 3 etiketlerini temizle
-                kwargs.pop('batch_shape', None)
-                kwargs.pop('optional', None)
-                kwargs.pop('quantization_config', None)
-                kwargs.pop('registered_name', None)
-                return original_init(self, *args, **kwargs)
-            
-            layer_class.__init__ = new_init
-
-# Yamayı çalıştır
-fix_all_layers()
+# Keras'ın model yüklerken bilmediği parametreleri görmezden gelmesini sağlar
+tf.keras.utils.get_custom_objects().clear() 
 
 print("Model yükleniyor...")
-# Artık tüm katmanlar 'temizlendiği' için güvenle yüklenecektir
-model = tf.keras.models.load_model(MODEL_PATH, compile=False)
+# Modeli 'safe mode' gibi yüklemek için bu parametreleri kullanın
+model = tf.keras.models.load_model(
+    MODEL_PATH, 
+    compile=False,
+    safe_mode=False # Bu parametre Keras 3/2 uyuşmazlığını esnetir
+)
 
 
 metrics = pickle.load(open("metrics.pkl", "rb"))
