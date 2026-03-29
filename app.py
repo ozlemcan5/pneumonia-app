@@ -31,7 +31,8 @@ if not os.path.exists(MODEL_PATH):
     gdown.download(url, MODEL_PATH, quiet=False)
 
 print("Model yükleniyor...")
-model = tf.keras.models.load_model(MODEL_PATH)
+
+model = tf.keras.models.load_model(MODEL_PATH, compile=False)
 
 
 
